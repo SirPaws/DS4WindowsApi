@@ -1,4 +1,5 @@
 # DS4WindowsApi
+this is a fork of TomAppelman's 
 Unofficial Dualshock 4 api for windows
 (inspired by the xinput api made by microsoft)
 
