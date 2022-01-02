@@ -1,4 +1,3 @@
-#pragma once
 #ifndef DUALSHOCK4_HEADER
 #define DUALSHOCK4_HEADER
 #include <stdint.h>
