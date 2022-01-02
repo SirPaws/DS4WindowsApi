@@ -20,11 +20,11 @@ that honor goes to Tom Appelman[^1] all the changes I have made are shown in the
 - Includes source for a xinput api wrapper(not fully functional in all games);
 
 # Usage
-the easiest way to use this is through the global `DualShock4Init` function as seen in the example,
+the easiest way to use this is through the global `DualShock4Init` function as seen in the [SampleApp.cpp](https://github.com/SirPaws/DS4WindowsApi/blob/master/example/SampleApp.cpp) example,
 this will create a window in the background that keeps track of the different controllers.
 
 if however you want to keep it in the same thread as the window then you can use the alternative interface.
-this interface is the same as is used in the backend, this can be seen in the `SampleAppAlternative.cpp` example
+this interface is the same as the one used in the backend, the interface can be seen in the [SampleAppAlternative.cpp](https://github.com/SirPaws/DS4WindowsApi/blob/master/example/SampleAppAlternative.cpp) example
 
 # Changelog
 * Unified everything into a *single* header
