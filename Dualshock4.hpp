@@ -217,7 +217,7 @@ public:
 	}
 	const float TouchYMotionNormalized(const unsigned int index = 0)const
 	{
-		return mPrevPtr->Gamepad.TouchY[index] / float(Dualshock4Limits::eTouchWidth) - (mCurPtr->Gamepad.TouchY[index] / float(Dualshock4Limits::eTouchWidth));
+		return mPrevPtr->Gamepad.TouchY[index] / float(Dualshock4Limits::eTouchHeight) - (mCurPtr->Gamepad.TouchY[index] / float(Dualshock4Limits::eTouchHeight));
 	}
 	
 

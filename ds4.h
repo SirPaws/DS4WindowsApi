@@ -136,6 +136,24 @@ uint32_t DualShock4SetVibration( uint32_t user_index, DUALSHOCK4_VIBRATION* vib)
 uint32_t DualShock4SetLight(uint32_t user_index, DUALSHOCK4_LIGHT* light);
 uint32_t DualShock4SetLightBlink( uint32_t user_index, uint8_t time);
 
+// these are only used if you handle Win32 loop yourself
+#ifdef STRICT
+int DualShock4InputRegister(struct HWND__ *hwnd);
+int DualShock4InputUnregister(struct HWND__ *hwnd);
+int DualShock4OnDeviceAdded(void *hDevice);
+int DualShock4OnDeviceRemoved(void *hDevice);
+int DualShock4OnDeviceInput(struct HRAWINPUT__**RawDataInputPtr);
+#else
+int DualShock4InputRegister(void *hwnd);
+int DualShock4InputUnregister(void *hwnd);
+int DualShock4OnDeviceAdded(void *hDevice);
+int DualShock4OnDeviceRemoved(void *hDevice);
+int DualShock4OnDeviceInput(void **RawDataInputPtr);
+#endif
+
+void DualShock4DisconnectAll(void);
+
+
 #ifdef __cplusplus
 }
 #endif
@@ -615,25 +633,7 @@ void DualShock4Shutdown()
 		CloseHandle(sRawInputState.ThreadHandle);
 		WaitForSingleObject(sRawInputState.ThreadHandle, INFINITE);
 		
-		// disconenct all disconnect devices(or just turn down the light a bit
-		DUALSHOCK4_VIBRATION nullVib = { 0 };
-		for (UINT i = 0; i < DUALSHOCK4_MAX_USERS; i++)
-		{
-			//DualShock4SetLight(i, &sDualShockDefaultLightOffData[i]);
-			//DualShock4SetVibration(i, &nullVib);
-			
-			DUALSHOCK4_VIBRATION nullVib = { 0 };
-			DUALSHOCK4_LIGHT nullLight = { 0 };
-			DualShock4SetLightBlink(i, 0);
-			DualShock4SetLight(i, &sDualShockDefaultLightOffData[i]);
-			
-			DualShock4SetVibration(i, &nullVib);
-			sRawInputState.DeviceHandle[i] = 0;
-			CloseHandle(sRawInputState.HIDHandle[i]);
-			sRawInputState.HIDHandle[i] = NULL;
-			memset(&sRawInputState.DeviceInfo[i], 0, sizeof(DUALSHOCK4_STATE));
-			sRawInputState.DeviceConnectedNum--;
-		}
+        DualShock4DisconnectAll();
 
 		// unregister rawinput listener
 		//DualShock4InputUnregister(sRawInputState.WindowHandle);
@@ -644,6 +644,28 @@ void DualShock4Shutdown()
 
 
 	}
+}
+
+void DualShock4DisconnectAll(void) {
+    // disconenct all disconnect devices(or just turn down the light a bit
+    DUALSHOCK4_VIBRATION nullVib = { 0 };
+    for (UINT i = 0; i < DUALSHOCK4_MAX_USERS; i++)
+    {
+        //DualShock4SetLight(i, &sDualShockDefaultLightOffData[i]);
+        //DualShock4SetVibration(i, &nullVib);
+
+        DUALSHOCK4_VIBRATION nullVib = { 0 };
+        DUALSHOCK4_LIGHT nullLight = { 0 };
+        DualShock4SetLightBlink(i, 0);
+        DualShock4SetLight(i, &sDualShockDefaultLightOffData[i]);
+
+        DualShock4SetVibration(i, &nullVib);
+        sRawInputState.DeviceHandle[i] = 0;
+        CloseHandle(sRawInputState.HIDHandle[i]);
+        sRawInputState.HIDHandle[i] = NULL;
+        memset(&sRawInputState.DeviceInfo[i], 0, sizeof(DUALSHOCK4_STATE));
+        sRawInputState.DeviceConnectedNum--;
+    }
 }
 
 #define VIB_MASK 0xf1

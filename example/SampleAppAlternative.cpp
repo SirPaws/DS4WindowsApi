@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <Windows.h>
-#include <Dualshock4.h>
-#include <Dualshock4.hpp>
+#define DUALSHOCK4_IMPLEMENTATION
+#include "../Dualshock4.hpp"
 
 HWND windowHandle = 0;
 DUALSHOCK4_STATE state = { 0 };
@@ -62,20 +62,34 @@ LRESULT CALLBACK AppMsgCallback(HWND hWnd, UINT MessageID, WPARAM wParam, LPARAM
 	switch (MessageID) {
 		default:break;
 		case WM_CREATE:
-			Dualshock4Init();
+            DualShock4InputRegister(hWnd);
 			printf("Dualshock 4 api for windows version %i\n", DualShock4GetVersion());
 			Sleep(100);// this hold the application so the dualshock api can load its thread
 			printf("Dualshock 4 num controllers found : %i\n", DualShock4GetNumDevices());
 			SetTimer(hWnd, 1, 66, TickEventProc);
 			break;
 		case WM_DESTROY:
-			Dualshock4Shutdown();
+            DualShock4InputUnregister(hWnd);
+            DualShock4DisconnectAll();
 			exit(0);
 			return 1;
 		case WM_CLOSE:
 			DestroyWindow(hWnd);
 			break;
-	}
+    case WM_INPUT:
+        DualShock4OnDeviceInput((HRAWINPUT*)&lParam);
+        break;
+	case WM_INPUT_DEVICE_CHANGE:
+        if (wParam == GIDC_ARRIVAL)
+        {
+            DualShock4OnDeviceAdded((HANDLE)lParam);
+        }
+        else if (wParam == GIDC_REMOVAL)
+        {
+            DualShock4OnDeviceRemoved((HANDLE)lParam);
+        }
+        break;
+    }
 	return DefWindowProc(hWnd, MessageID, wParam, lParam);
 }
 
@@ -87,14 +101,14 @@ int CreateAppWnd()
 	ZeroMemory(&wc, sizeof(WNDCLASSEX));
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.hInstance = GetModuleHandle(0);
-	wc.lpszClassName = L"APPWND";
+	wc.lpszClassName = TEXT("APPWND");
 	wc.lpfnWndProc = AppMsgCallback;
 
 	result = RegisterClassEx(&wc);
 	if (!result) {
 		return FALSE;
 	}
-	windowHandle = CreateWindowEx(0, L"APPWND", L"Sample App", 0, 0, 0, 320, 240, NULL, 0, GetModuleHandle(0), 0);
+	windowHandle = CreateWindowEx(0, TEXT("APPWND"), TEXT("Sample App"), 0, 0, 0, 320, 240, nullptr, 0, GetModuleHandle(0), 0);
 	if (!windowHandle) {
 		return FALSE;
 	}
@@ -108,7 +122,7 @@ int main(){
 	if (!CreateAppWnd()) {
 		return FALSE;
 	}
-	while (GetMessage(&msg, NULL, 0, 0) > 0) {
+	while (GetMessage(&msg, nullptr, 0, 0) > 0) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
