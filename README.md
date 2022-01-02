@@ -16,7 +16,7 @@ Unofficial Dualshock 4 api for windows
 - Includes source for a xinput api wrapper(not fully functional in all games);
 
 # Changelog
-* made unified everything into a single header
+* Unified everything into a single header
 * some functions had spelled dualshock as 'Dual**s**hock' where others were 'Dual**S**hock',
-  changed all to be the latter
-* changed names of structures so that they don't use reserved identifiers
+  changed all functions to be the latter
+* Changed names of structures so that they don't use reserved identifiers
