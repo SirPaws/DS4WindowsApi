@@ -3,7 +3,7 @@ this is a fork of TomAppelman's
 Unofficial Dualshock 4 api for windows
 (inspired by the xinput api made by microsoft)
 
-Working features:
+# Working features:
 - Compatible with Windows 10 and works even with the anniversary update;
 - Fully working Dualshock 4 api for intergration without external software;
 - Can be used as seperate DLL or as Static library;
@@ -14,3 +14,9 @@ Working features:
 - Vibration functionality;
 - Support for both the Dualshock 4 models(CUH-ZTC1 & CUH-ZTC2);
 - Includes source for a xinput api wrapper(not fully functional in all games);
+
+# Changelog
+* made unified everything into a single header
+* some functions had spelled dualshock as 'Dual**s**hock' where others were 'Dual**S**hock',
+  changed all to be the latter
+* changed names of structures so that they don't use reserved identifiers

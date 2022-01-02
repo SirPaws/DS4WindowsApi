@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Dualshock4.h"
+#include "ds4.h"
+#include <Windows.h>
 
 //
 struct Dualshock4ApiInfo {
