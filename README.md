@@ -1,7 +1,12 @@
 # DS4WindowsApi
-this is a fork of TomAppelman's 
+this is a fork of Tom Appelman's 
 Unofficial Dualshock 4 api for windows
 (inspired by the xinput api made by microsoft)
+
+I want to make it clear that I am not the original author of this library
+that honor goes to Tom Appelman[^1] all the changes I have made are shown in the changelog in this file 
+[^1]: https://github.com/TomAppelman
+
 
 # Working features:
 - Compatible with Windows 10 and works even with the anniversary update;
