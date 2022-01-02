@@ -135,21 +135,6 @@ uint32_t DualShock4SetVibration( uint32_t user_index, DUALSHOCK4_VIBRATION* vib)
 uint32_t DualShock4SetLight(uint32_t user_index, DUALSHOCK4_LIGHT* light);
 uint32_t DualShock4SetLightBlink( uint32_t user_index, uint8_t time);
 
-// these are only used if you handle Win32 loop yourself
-#ifdef STRICT
-int DualShock4InputRegister(struct HWND__ *hwnd);
-int DualShock4InputUnregister(struct HWND__ *hwnd);
-int DualShock4OnDeviceAdded(void *hDevice);
-int DualShock4OnDeviceRemoved(void *hDevice);
-int DualShock4OnDeviceInput(struct HRAWINPUT__**RawDataInputPtr);
-#else
-int DualShock4InputRegister(void *hwnd);
-int DualShock4InputUnregister(void *hwnd);
-int DualShock4OnDeviceAdded(void *hDevice);
-int DualShock4OnDeviceRemoved(void *hDevice);
-int DualShock4OnDeviceInput(void **RawDataInputPtr);
-#endif
-
 void DualShock4DisconnectAll(void);
 
 
@@ -300,8 +285,10 @@ int DualShock4OnDeviceAdded(HANDLE hDevice)
 		unsigned int DeviceNameLenght = 250;
 		GetRawInputDeviceInfo(hDevice, RIDI_DEVICENAME, &DeviceName, &DeviceNameLenght);
 
+        
+
 		// create device connection
-		HANDLE HIDHandle = CreateFile(DeviceName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+		HANDLE HIDHandle = CreateFile((const char*)DeviceName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 
 		sRawInputState.DeviceHandle[device_index] = hDevice;
 		sRawInputState.HIDHandle[device_index] = HIDHandle;
@@ -360,8 +347,6 @@ int DualShock4OnDeviceRemoved(HANDLE hDevice)
 }
 int DualShock4OnDeviceInput(HRAWINPUT* RawDataInputPtr)
 {
-	RID_DEVICE_INFO device_info = { 0 };
-	unsigned int SizeInBytes = sizeof(RID_DEVICE_INFO);
 	uint32_t device_index = UINT32_MAX;
 	DUALSHOCK4_STATE* device_state_ptr = 0;
 	uint32_t offset = 0;	
@@ -414,7 +399,7 @@ int DualShock4OnDeviceInput(HRAWINPUT* RawDataInputPtr)
 		device_state_ptr->Gamepad.Buttons = 0;
 		device_state_ptr->Gamepad.Buttons |= (RawDataPtr[offset + 5] & 0xf0);
 		device_state_ptr->Gamepad.Buttons |= RawDataPtr[offset + 6] << 8;
-		device_state_ptr->Gamepad.Buttons |= RawDataPtr[offset + 7] & 0x1 == 1 ? DUALSHOCK4_BUTTON_PS : 0;
+		device_state_ptr->Gamepad.Buttons |= ((RawDataPtr[offset + 7] & 0x1) == 1) ? DUALSHOCK4_BUTTON_PS : 0;
 		device_state_ptr->Gamepad.Buttons |= ((RawDataPtr[offset + 7] & 0x2) == 2) ? DUALSHOCK4_BUTTON_TOUCHPAD : 0;
 
 		// get analog stick data
@@ -502,7 +487,7 @@ int DualShock4OnDeviceInput(HRAWINPUT* RawDataInputPtr)
 	return FALSE;
 }
 int DualShock4InputRegister(HWND hwnd) {
-
+    (void)hwnd;
 	
 	memset(&sRawInputState, 0, sizeof(sRawInputState));
 	RAWINPUTDEVICE Rid[1];
@@ -520,6 +505,7 @@ int DualShock4InputRegister(HWND hwnd) {
 }
 
 int DualShock4InputUnregister(HWND hwnd) {
+    (void)hwnd;
 	RAWINPUTDEVICE Rid[1];
 	Rid[0].usUsagePage = 0x01;
 	Rid[0].usUsage = 0x05;
@@ -591,6 +577,8 @@ int CreateDualShock4InputWindow()
 //
 DWORD WINAPI DualShock4InputThread(LPVOID pParameter)
 {
+    (void)pParameter;
+
 	MSG msg = { 0 };
 	if (!CreateDualShock4InputWindow()) {
 		return FALSE;
@@ -653,8 +641,6 @@ void DualShock4DisconnectAll(void) {
         //DualShock4SetLight(i, &sDualShockDefaultLightOffData[i]);
         //DualShock4SetVibration(i, &nullVib);
 
-        DUALSHOCK4_VIBRATION nullVib = { 0 };
-        DUALSHOCK4_LIGHT nullLight = { 0 };
         DualShock4SetLightBlink(i, 0);
         DualShock4SetLight(i, &sDualShockDefaultLightOffData[i]);
 
