@@ -24,7 +24,8 @@ the easiest way to use this is through the global `DualShock4Init` function as s
 this will create a window in the background that keeps track of the different controllers.
 
 if however you want to keep it in the same thread as the window then you can use the alternative interface.
-this interface is the same as the one used in the backend, the interface can be seen in the [SampleAppAlternative.cpp](https://github.com/SirPaws/DS4WindowsApi/blob/master/example/SampleAppAlternative.cpp) example
+this interface is the same as the one used in the backend, the interface can be seen in the [SampleAppAlternative.cpp](https://github.com/SirPaws/DS4WindowsApi/blob/master/example/SampleAppAlternative.cpp) example.
+note that this interface is only available if the implementation of DS4 is in the same file
 
 # Changelog
 * Unified everything into a *single* header
